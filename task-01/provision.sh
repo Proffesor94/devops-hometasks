@@ -1,17 +1,6 @@
 sudo apt update
 sudo apt upgrade
-<<<<<<< HEAD
-sudo apt install -y apache2 
-
-sudo apt -y install lsb-release apt-transport-https ca-certificates wget
-sudo wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
-echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/php.list
-
-sudo apt update
-sudo apt -y install php7.4 #libapache2-mod-php7.4
-=======
 sudo apt install -y apache2 php
->>>>>>> 3f9c46823591cabc747d7c68b9e4385f65dafe38
 
 php -v
 
