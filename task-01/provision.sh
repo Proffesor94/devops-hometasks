@@ -1,41 +1,27 @@
-sudo apt update
-sudo apt upgrade
-<<<<<<< HEAD
-sudo apt install -y apache2 
+#sudo dnf upgrade --refresh -y 
+#sudo dnf install -y httpd @mysql php 
+#sudo dnf clean all
 
-sudo apt -y install lsb-release apt-transport-https ca-certificates wget
-sudo wget -O /etc/apt/trusted.gpg.d/php.gpg https://packages.sury.org/php/apt.gpg
-echo "deb https://packages.sury.org/php/ $(lsb_release -sc) main" | sudo tee /etc/apt/sources.list.d/php.list
+sudo systemctl enable mysqld.service
+sudo systemctl start mysqld.service
 
-sudo apt update
-sudo apt -y install php7.4 #libapache2-mod-php7.4
-=======
-sudo apt install -y apache2 php
->>>>>>> 3f9c46823591cabc747d7c68b9e4385f65dafe38
-
-php -v
-
-echo 'Listen 81' >> /etc/apache2/ports.conf
+sudo echo 'Listen 81' >> /etc/httpd/conf/httpd.conf
+echo 'ServerName 127.0.0.1' >> /etc/httpd/conf/httpd.conf
+sudo systemctl enable httpd
+sudo systemctl start httpd
 
 #create dir siteone
-mkdir -p /var/www/siteone/html
-cp /home/vagrant/index/index.html /var/www/siteone/html
-cp /home/vagrant/conf/siteone.conf /etc/apache2/sites-available/
+sudo mkdir -p /var/www/html/siteone
+sudo cp /tmp/vagrant/index/index.html /var/www/html/siteone
+sudo cp /tmp/vagrant/conf/siteone.conf /etc/httpd/conf.d/
 
 #create dir sitetwo
-mkdir -p /var/www/sitetwo/html
-cp /home/vagrant/index/index.php /var/www/sitetwo/html
-cp /home/vagrant/conf/sitetwo.conf /etc/apache2/sites-available/
+sudo mkdir -p /var/www/html/sitetwo
+sudo cp /tmp/vagrant/index/index.php /var/www/html/sitetwo
+sudo cp /tmp/vagrant/conf/sitetwo.conf /etc/httpd/conf.d/
 
-#active siteone and sitetwo
-sudo a2ensite siteone.conf
-sudo a2ensite sitetwo.conf
-sudo a2dissite 000-default.conf
-
-#start php7.4
-sudo a2enmod php7.*
-
-echo 'Listen 81' >> /etc/apache2/ports.conf
+sudo chown -R apache.apache /var/www/
+sudo service firewalld stop
 
 #restart apache
-systemctl restart apache2
+sudo systemctl restart httpd
