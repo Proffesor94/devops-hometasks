@@ -24,7 +24,5 @@ sudo a2dissite 000-default.conf
 #start php7.4
 sudo a2enmod php7.*
 
-echo 'Listen 81' >> /etc/apache2/ports.conf
-
 #restart apache
 systemctl restart apache2
