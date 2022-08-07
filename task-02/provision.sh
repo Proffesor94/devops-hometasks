@@ -47,7 +47,6 @@ lxc-start -n dynamic_site
 
 sleep 10
 
-#lxc-attach static_site -- yum update
 lxc-attach static_site -- yum install -y -q httpd httpd-devel httpd-tools
 lxc-attach static_site -- mkdir -p /var/www/siteone/html
 
