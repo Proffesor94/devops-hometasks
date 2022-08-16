@@ -1,0 +1,268 @@
+- name: playbook.yaml
+  hosts: all
+  become: yes
+  
+  tasks:
+    - name: copy templates
+      copy:
+        src: /vagrant/templates
+        dest: /home/vagrant/
+
+    - name: apt-get update
+      apt:
+        update_cache: yes
+    
+    - name: iptable routing
+      shell: | 
+       iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 80 -j DNAT --to-destination 10.0.3.20  
+       iptables -t nat -A PREROUTING -p tcp -i eth0 --dport 81 -j DNAT --to-destination 10.0.3.30
+       iptables -L -t nat
+
+    - name: install packages
+      apt:
+       pkg:
+       - lxc
+       - python-lxc
+       - lxc-dev
+       - lxc-templates
+       - software-properties-common
+       state: present
+
+    - name: lxc default template 
+      become: yes
+      template:
+       src: /home/vagrant/templates/default.conf
+       dest: /etc/lxc/default.conf
+
+    - name: lxc net template
+      become: yes
+      template:
+       src: /home/vagrant/templates/lxc-net
+       dest: /etc/default/lxc-net
+
+    - name: lxc net template
+      become: yes
+      template:
+       src: /home/vagrant/templates/lxc-dhcp.conf
+       dest: /etc/default/lxc-dhcp.conf
+
+    - name: Create a stopped container
+      lxc_container:
+        name: static
+        container_log: true
+        template: download
+        state: stopped
+        template_options: --dist centos --release 8-Stream --arch amd64 --no-validate
+
+    - name: Create a stopped container 2
+      lxc_container:
+        name: dynamic
+        container_log: true
+        template: download
+        state: stopped
+        template_options: --dist centos --release 8-Stream --arch amd64 --no-validate
+   
+    - name: Add mappings to static
+      become: yes
+      blockinfile:
+        path: /var/lib/lxc/static/config
+        block: |
+         lxc.net.0.ipv4.address = 10.0.3.20/24
+         lxc.net.0.ipv4.gateway = 10.0.3.1
+
+    - name: Add mappings to dynamic
+      become: yes
+      blockinfile:
+        path: /var/lib/lxc/dynamic/config
+        block: |
+         lxc.net.0.ipv4.address = 10.0.3.30/24
+         lxc.net.0.ipv4.gateway = 10.0.3.1
+
+    - name: start lxc
+      become: yes
+      service:
+        name: lxc
+        state: started
+
+    - name: start lxc-net
+      become: yes
+      service:
+        name: lxc-net
+        state: started
+
+    - name: httpd install static
+      lxc_container:
+       name: static
+       state: started
+       container_command: |
+        sleep 15
+        yum install httpd -y
+        systemctl enable httpd
+
+    - name: httpd install dynamic
+      lxc_container:
+       name: dynamic
+       state: started
+       container_command: |
+        sleep 15
+        yum update
+        yum install httpd -y
+        yum install php-fpm -y
+        yum install php -y
+        yum install php-mysql -y
+        yum install php-mbstring -y  
+        yum install php-mcrypt -y
+        yum install php-devel -y
+        yum install php-xml -y
+        yum install php-gd -y
+
+
+        systemctl enable httpd
+
+    - name: create directory
+      become: yes
+      file: 
+       path: /var/lib/lxc/dynamic/rootfs/etc/httpd/sites-enabled
+       state: directory
+       owner: root
+       group: root
+       mode: 0755
+
+    - name: create directory
+      become: yes
+      file: 
+       path: /var/lib/lxc/static/rootfs/etc/httpd/sites-enabled
+       state: directory
+       owner: root
+       group: root
+       mode: 0755
+    
+    - name: create directory
+      become: yes
+      file: 
+       path: /var/lib/lxc/dynamic/rootfs/etc/httpd/sites-available
+       state: directory
+       owner: root
+       group: root
+       mode: 0755
+
+    - name: create directory
+      become: yes
+      file: 
+       path: /var/lib/lxc/static/rootfs/etc/httpd/sites-available
+       state: directory
+       owner: root
+       group: root
+       mode: 0755
+
+    - name: create dynamic conf
+      become: yes
+      file: 
+        path: /var/lib/lxc/dynamic/rootfs/etc/httpd/sites-available/dynamic.conf
+        state: touch
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: create static conf
+      become: yes
+      file: 
+        path: /var/lib/lxc/static/rootfs/etc/httpd/sites-available/static.conf
+        state: touch
+        owner: root
+        group: root
+        mode: 0755
+
+    - name: create directory 4 php page
+      become: yes
+      file: 
+       path: /var/lib/lxc/dynamic/rootfs/var/www/site/php
+       state: directory
+       owner: root
+       group: root
+       mode: 0755
+
+    - name: create directory 4 html page
+      become: yes
+      file: 
+       path: /var/lib/lxc/static/rootfs/var/www/site/html
+       state: directory
+       owner: root
+       group: root
+       mode: 0755
+
+    - name: create dynamicpage
+      become: yes
+      file: 
+       path: /var/lib/lxc/dynamic/rootfs/var/www/site/php/index.php
+       state: touch
+       owner: root
+       group: root
+       mode: 0755
+
+    - name: create staticpage
+      become: yes
+      file: 
+       path: /var/lib/lxc/static/rootfs/var/www/site/html/index.html
+       state: touch
+       owner: root
+       group: root
+       mode: 0755
+
+    - name: site static conf change
+      become: yes
+      template:
+       src: /home/vagrant/templates/static.j2
+       dest: /var/lib/lxc/static/rootfs/etc/httpd/sites-available/static.conf
+
+    - name: site dynamic conf change
+      become: yes
+      template:
+        src: /home/vagrant/templates/dynamic.j2
+        dest: /var/lib/lxc/dynamic/rootfs/etc/httpd/sites-available/dynamic.conf
+
+    - name: template page for static site
+      template: 
+       src: /home/vagrant/templates/staticpage.j2
+       dest: /var/lib/lxc/static/rootfs/var/www/site/html/index.html
+
+    - name: template page for dynamic site
+      template: 
+       src: /home/vagrant/templates/dynamicpage.j2
+       dest: /var/lib/lxc/dynamic/rootfs/var/www/site/php/index.php
+
+    - name: template page for httpd.conf(port+index.php)
+      template: 
+       src: /home/vagrant/templates/httpd.j2
+       dest: /var/lib/lxc/dynamic/rootfs/etc/httpd/conf/httpd.conf
+
+    #- name: add port 81 dynamic lxc
+      #become: yes
+      #lineinfile:
+        #dest: /var/lib/lxc/dynamic/rootfs/etc/httpd/conf/httpd.conf
+        #regexp: '^'
+        #line: 'Listen 81'
+        #insertafter: EOF
+
+    - name: minor changes static lxc
+      lxc_container:
+       name: static
+       state: started
+       container_command: |
+        echo "IncludeOptional sites-enabled/*.conf" >> /etc/httpd/conf/httpd.conf
+        ln -s /etc/httpd/sites-available/static.conf /etc/httpd/sites-enabled/http.conf
+        systemctl start httpd
+        systemctl restart httpd
+        
+    - name: minor changes dynamic lxc
+      lxc_container:
+       name: dynamic
+       state: started
+       container_command: |
+        ln -s /etc/httpd/sites-available/dynamic.conf /etc/httpd/sites-enabled/http.conf
+        setenforce 0
+        systemctl start httpd
+        systemctl restart httpd
+        systemctl enable httpd.service
+
+

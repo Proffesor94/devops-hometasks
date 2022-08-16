@@ -1,0 +1,125 @@
+---
+- name: Master provision
+  hosts: all
+  become: true
+  vars_files:
+    - /vagrant/vars/default.yaml
+
+  tasks:
+    - name: disable key check
+      #become: yes
+      ini_file:
+        path: /etc/ansible/ansible.cfg
+        section: defaults
+        option: host_key_checking
+        value: False
+     
+    - name: Set alias ll
+      replace:
+        path: /home/vagrant/.bashrc
+        regexp: "^#alias ll='ls -l'$"
+        replace: "alias ll='ls -la'"
+    
+    - name: Set colors
+      replace:
+        path: /home/vagrant/.bashrc
+        regexp: "^#force_color_prompt=yes$"
+        replace: "force_color_prompt=yes"
+
+  #   - name: copy playbook
+  #     copy:
+  #       src: /vagrant/playbook.yaml
+  #       dest: /home/vagrant/playbook.yaml
+  #
+  #   - name: copy inventory
+  #     copy:
+  #       src: /vagrant/inventory
+  #       dest: /home/vagrant/inventory
+
+    - name: install packages
+      #become: yes
+      apt:
+        pkg:
+        - apache2
+        - php
+        - wget
+        state: present
+
+    - name: Disable default Apache site
+      shell: /usr/sbin/a2dissite 000-default.conf
+      when: disable_default
+      notify: Reload Apache
+
+# siteone seting
+    - name: Create dir siteone
+      become: true
+      file:
+        path: /var/www/siteone
+        state: directory
+        owner: www-data
+        mode: '0755'
+
+    - name: copy index.html
+      copy:
+        src: /vagrant/static_site/index.html
+        dest: /var/www/siteone
+
+    - name: copy /vagrant/static_site/siteone.conf
+      copy:
+        src: /vagrant/static_site/siteone.conf
+        dest: /etc/apache2/sites-available/
+
+  #  - name: Set up Apache virtualhost
+  #    template:
+  #      src: "files/apache_one.conf.j2"
+  #      dest: "/etc/apache2/sites-available/siteone.conf"
+  #    notify: Reload Apache
+
+    - name: Enable siteone
+      shell: /usr/sbin/a2ensite siteone.conf
+      notify: Reload Apache
+
+# sitetwo seting
+    - name: Create dir sitetwo
+      become: true
+      file:
+        path: /var/www/sitetwo
+        state: directory
+        owner: www-data
+        mode: '0755'
+
+    - name: copy index.php
+      copy:
+        src: /vagrant/dynamic_site/index.php
+        dest: /var/www/sitetwo
+
+    - name: Add port 81 strings
+      lineinfile:
+        path: "/etc/apache2/ports.conf"
+        line: 'Listen 81'
+
+    - name: copy /vagrant/dynamic_site/sitetwo.conf
+      copy:
+        src: /vagrant/dynamic_site/sitetwo.conf
+        dest: /etc/apache2/sites-available/
+
+  #  - name: Set up Apache virtualhost
+  #    template:
+  #      src: "files/apache_two.conf.j2"
+  #      dest: "/etc/apache2/sites-available/{{ http_conf2 }}"
+  #    notify: Reload Apache
+
+    - name: Enable sitetwo
+      shell: /usr/sbin/a2ensite sitetwo.conf
+      notify: Reload Apache
+
+  handlers:
+    - name: Reload Apache
+      service:
+        name: apache2
+        state: reloaded
+
+    - name: Restart Apache
+      service:
+        name: apache2
+        state: restarted
