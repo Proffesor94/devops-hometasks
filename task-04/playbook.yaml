@@ -53,7 +53,7 @@
               remote: 'https://github.com/Proffesor94/puppet-tasks.git'
               basedir: '/etc/puppetlabs/code/environments'
 
-    - name: Ensure a job that runs every 5 minets. 
+    - name: Ensure a job that runs every 5 minutes. 
       cron:
         name: "Run r10k"
         minute: "*/5"
@@ -62,9 +62,9 @@
     - name: Reduce puppet_server memory usage
       replace:
         path: /etc/sysconfig/puppetserver
-        regexp: "-Xm(s|x)2g"
+        regexp: '-Xm(s|x)2g'
         replace: '-Xm\g<1>512m'
-      notify: restart puppet server
+      notify: restart puppet_server
 
     - name: Remove invalid key
       file:
