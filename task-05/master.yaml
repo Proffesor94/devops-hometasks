@@ -12,11 +12,6 @@
         state: stopped
         enabled: False
 
-    - name: Install epel repository
-      dnf:
-        name: 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm'
-        state: present
-
     - name: Install puppet repo
       dnf:
         name: "https://yum.puppet.com/puppet7-release-el-8.noarch.rpm"
@@ -86,14 +81,11 @@
               :remote: 'https://github.com/Proffesor94/puppet-tasks.git'
               :basedir: '/etc/puppetlabs/code/environments'
 
-    - name: sync files github repository
-      shell: /opt/puppetlabs/puppet/bin/r10k deploy environment -p
-
-    # - name: Ensure a job that runs every 1 minutes.
-    #   cron:
-    #     name: "Run r10k"
-    #     minute: "*/1"
-    #     job: "/opt/puppetlabs/puppet/bin/r10k deploy environment -p"
+    - name: Ensure a job that runs every 1 minute.
+      cron:
+        name: "Run r10k"
+        minute: "*/1"
+        job: "/opt/puppetlabs/puppet/bin/r10k deploy environment -p"
 
     - name: add host puppetserver
       ini_file:
