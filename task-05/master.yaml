@@ -1,0 +1,163 @@
+---
+- name: Initial config for all hosts
+  hosts: all
+  become: yes
+  tasks:
+    - name: switch off SELinux
+      shell: setenforce Permissive
+
+    - name: Disable firewalld
+      service:
+        name: firewalld
+        state: stopped
+        enabled: False
+
+    - name: Install epel repository
+      dnf:
+        name: 'https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm'
+        state: present
+
+    - name: Install puppet repo
+      dnf:
+        name: "https://yum.puppet.com/puppet7-release-el-8.noarch.rpm"
+        state: present
+        disable_gpg_check: yes
+
+- name: master config
+  hosts: master
+  become: yes
+  tasks:
+    - name: Edit /etc/hosts
+      blockinfile:
+        path: /etc/hosts
+        block: |
+          192.168.56.11 master.puppet puppet
+          192.168.56.21 slave1.puppet
+          192.168.56.22 slave2.puppet
+          192.168.56.23 mineserver.puppet
+
+    - name: Install puppetserver
+      yum:
+        name:
+        - git
+        - puppetserver
+        state: present
+
+    - name: Reduce puppetserver memory usage
+      replace:
+        path: /etc/sysconfig/puppetserver
+        regexp: '-Xm(s|x)2g'
+        replace: '-Xm\g<1>512m'
+      notify:
+        - restart puppetserver
+
+    - name: start and enable puppetservser
+      service:
+        name: puppetserver
+        state: started
+        enabled: yes
+
+    - name: start and enable puppet-agent
+      service:
+        name: puppet
+        state: started
+        enabled: yes
+
+    - name: Install r10k
+      gem:
+        name: r10k
+        state: present
+        executable: /opt/puppetlabs/puppet/bin/gem
+        user_install: no
+
+    - name: Create a directory r10k inside /etc/puppetlabs/
+      file:
+        path: /etc/puppetlabs/r10k
+        state: directory
+        mode: '0775'
+
+    - name: Make script for r10k
+      copy:
+        dest: /etc/puppetlabs/r10k/r10k.yaml
+        content: |
+          :cachedir: '/var/cache/r10k'
+          :sources:
+            :my-org:
+              :remote: 'https://github.com/Proffesor94/puppet-tasks.git'
+              :basedir: '/etc/puppetlabs/code/environments'
+
+    - name: sync files github repository
+      shell: /opt/puppetlabs/puppet/bin/r10k deploy environment -p
+
+    # - name: Ensure a job that runs every 1 minutes.
+    #   cron:
+    #     name: "Run r10k"
+    #     minute: "*/1"
+    #     job: "/opt/puppetlabs/puppet/bin/r10k deploy environment -p"
+
+    - name: add host puppetserver
+      ini_file:
+        path: /etc/puppetlabs/puppet/puppet.conf
+        section: main
+        option: "{{ item.option }}"
+        value: "{{ item.value }}"
+      with_items:
+        - { option: "server", value: "master.puppet" }
+        - { option: "autosign", value: "true" }
+
+    - name: add agent puppetserver
+      ini_file:
+        path: /etc/puppetlabs/puppet/puppet.conf
+        section: agent
+        option: "{{ item.option }}"
+        value: "{{ item.value }}"
+      with_items:
+        - { option: "server", value: "master.puppet" }
+        - { option: "runinterval", value: "1m" }
+
+  handlers:
+    - name: restart puppetserver
+      service:
+        name: puppetserver
+        state: restarted
+
+- name: slaves config
+  hosts: slave
+  become: yes
+  tasks:
+    - name: Edit hosts
+      blockinfile:
+        path: /etc/hosts
+        block: |
+           192.168.56.11 master.puppet puppet
+
+    - name: Install puppet-agent
+      yum:
+        name:
+        - puppet-agent
+        state: present
+
+    - name: start and enable puppet
+      become: yes
+      service:
+        name: puppet
+        state: started
+        enabled: yes
+
+    - name: Edit /etc/puppetlabs/puppet/puppet.conf for adding agent
+      blockinfile:
+        path: /etc/puppetlabs/puppet/puppet.conf
+        block: |
+           [agent]
+           server = master.puppet
+           runinterval = 1m
+      notify:
+        - restart puppet
+
+  handlers:
+    - name: restart puppet
+      service:
+        name: puppet
+        state: restarted
+
+
