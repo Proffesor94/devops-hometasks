@@ -1,5 +1,6 @@
   - name: jenkins
     hosts: localhost
+    become: yes
     roles:
       - geerlingguy.java
       - jenkins
