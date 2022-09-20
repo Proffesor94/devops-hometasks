@@ -14,6 +14,7 @@
     - GitHub Branch Source  
     - SSH Build Agents  
     - nexus-artifact-uploader
+    - locale
   register: plugin_result
   until: plugin_result is success
   retries: 5
