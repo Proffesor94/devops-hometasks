@@ -3,15 +3,12 @@
     become: true
     pre_tasks:
 
-    - name: Add key
-      apt_key:
-        url: https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public
-  
-    - name: Add repository
+
+    - name: Add new repo
       apt_repository:
-      repo: deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ bullseye main
-      state: present
-      update_cache: true  
+        repo: deb http://security.debian.org/debian-security bullseye/updates main
+       #state: present
+        update_cache: true  
 
     - name: required pckgs install
       apt:
