@@ -28,6 +28,7 @@
     - GitHub Branch Source  
     - SSH Build Agents  
     - nexus-artifact-uploader
+    - timestamper 
 
 #- name: restart Jenkins after plugins install
 #  #become: yes
