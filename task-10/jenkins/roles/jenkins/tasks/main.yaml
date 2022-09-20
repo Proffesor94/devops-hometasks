@@ -49,7 +49,7 @@
     group: jenkins
   with_items:
     - /var/lib/jenkins/users/admin_11540685520045940567
-    - /var/lib/jenkins/jobs/gobuild
+    - /var/lib/jenkins/jobs/goxbuild
 
 - name: Copy config files
   become: yes
@@ -66,7 +66,7 @@
     - { src: "/root/roles/jenkins/files/locale.xml", dst: "/var/lib/jenkins/" }
     - { src: "/root/roles/jenkins/files/credentials.xml", dst: "/var/lib/jenkins/" }
     - { src: "/root/roles/jenkins/files/org.jenkinsci.plugins.golang.GolangBuildWrapper.xml", dst: "/var/lib/jenkins/" }
-    - { src: "/root/roles/jenkins/files/jobs/gobuild/config.xml", dst: "/var/lib/jenkins/jobs/gobuild/" }
+    - { src: "/root/roles/jenkins/files/jobs/goxbuild/config.xml", dst: "/var/lib/jenkins/jobs/goxbuild/" }
 
 - name: Disable start wizard
   lineinfile:
