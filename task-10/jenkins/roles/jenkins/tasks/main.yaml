@@ -40,7 +40,8 @@
     name: jenkins
     state: stopped
 
-- name: Make dirs
+- name: Create dirs
+  become: yes
   file:
     path: "{{ item }}"
     state: directory
