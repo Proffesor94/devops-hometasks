@@ -12,11 +12,11 @@
       url: http://localhost:8080
       user: admin
 
-  - name: Create a jenkins build 
-    community.general.jenkins_build:
-      name: "goxbuild"
-      build_number: 1
-      state: present
-      user: admin
-      password: admin
-      url: http://localhost:8080
+  # - name: Create a jenkins build 
+  #   community.general.jenkins_build:
+  #     name: "goxbuild"
+  #     build_number: 1
+  #     state: present
+  #     user: admin
+  #     password: admin
+  #     url: http://localhost:8080
