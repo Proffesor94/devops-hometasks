@@ -1,97 +1,101 @@
-- name: required pckgs install
-  apt:
-   pkg:
-    - daemon
-    - git
-    - build-essential 
-    - python-pip-whl
-    - python3-pip
-    - openjdk-11-jdk
-    - gnupg2
-   state: latest
-   update_cache: yes
-
-- name: install python-jenkins with pip
-  pip:
-   name:
-   - python-jenkins
-   - lxml
-
-- name: Add Jenkins apt repository key
-  apt_key:
-   url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
-   state: present
-
-- name: Add Jenkins apt repository
-  apt_repository:
-   repo: deb https://pkg.jenkins.io/debian-stable binary/
-   #state: present
-   update_cache: true
-   
 - name: Install Jenkins
-  apt:
-   pkg:
-   - jenkins
-   state: latest
-   
-- name: stop Jenkins
-  become: yes
-  service:
-    name: jenkins
-    state: stopped
+  vars:
+    jenkins_user: admin
+    jenkins_passw: admin
+    jenkins_url: http://localhost:8080
+  hosts: localhost
+  become: true
+  tasks:
+  - name: required pckgs install
+    apt:
+    pkg:
+     - daemon
+      - git
+      - build-essential 
+      - python-pip-whl
+      - python3-pip
+      - openjdk-11-jdk
+      - gnupg2
+    state: latest
+    update_cache: yes
 
-- name: Create dirs
-  become: yes
-  file:
-    path: "{{ item }}"
-    state: directory
-    owner: jenkins
-    group: jenkins
-  with_items:
-    - /var/lib/jenkins/users/admin_11540685520045940567
-    - /var/lib/jenkins/jobs/goxbuild
+  - name: install python-jenkins with pip
+    pip:
+    name:
+    - python-jenkins
+    - lxml
 
-- name: Copy config files
-  become: yes
-  copy:
-    src: "{{ item.src }}"
-    dest: "{{ item.dst }}"
-    owner: jenkins
-    group: jenkins
-    force: yes
-  with_items:
-    - { src: "/root/roles/jenkins/files/users/users.xml", dst: "/var/lib/jenkins/users/" }
-    - { src: "/root/roles/jenkins/files/users/admin_1540685520045940567/config.xml", dst: "/var/lib/jenkins/users/admin_1540685520045940567/" }
-    - { src: "/root/roles/jenkins/files/config.xml", dst: "/var/lib/jenkins/" }
-    - { src: "/root/roles/jenkins/files/locale.xml", dst: "/var/lib/jenkins/" }
-    - { src: "/root/roles/jenkins/files/credentials.xml", dst: "/var/lib/jenkins/" }
-    - { src: "/root/roles/jenkins/files/org.jenkinsci.plugins.golang.GolangBuildWrapper.xml", dst: "/var/lib/jenkins/" }
-    - { src: "/root/roles/jenkins/files/jobs/goxbuild/config.xml", dst: "/var/lib/jenkins/jobs/goxbuild/" }
-
-- name: Disable start wizard
-  lineinfile:
-    path: "{{ item.path }}"
+  - name: Add Jenkins apt repository key
+    apt_key:
+    url: https://pkg.jenkins.io/debian-stable/jenkins.io.key
     state: present
-    regexp: "{{ item.exp }}"
-    line: "{{ item.n_ln }}"
-  with_items:
-    - { path: "/etc/default/jenkins", exp: '^JAVA_ARGS="-Djava.awt.headless=true"', n_ln: 'JAVA_ARGS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dhudson.security.csrf.DefaultCrumbIssuer.EXCLUDE_SESSION_ID=true"' }
 
-- name: start Jenkins
-  become: yes
-  sysvinit:
-    name: jenkins
-    state: started
-  
-- name: pause for start jenkins app
-  shell: 'sleep 30'
-  
- #Install plugins
-- include_tasks: plugins.yaml
+  - name: Add Jenkins apt repository
+    apt_repository:
+    repo: deb https://pkg.jenkins.io/debian-stable binary/
+    #state: present
+    update_cache: true
+    
+  - name: Install Jenkins
+    apt:
+    pkg:
+    - jenkins
+    state: latest
+    
+  - name: stop Jenkins
+    service:
+      name: jenkins
+      state: stopped
 
- #Build the project
-- include_tasks: build.yaml
-  
+  - name: Create dirs
+    file:
+      path: "{{ item }}"
+      state: directory
+      owner: jenkins
+      group: jenkins
+    with_items:
+      - /var/lib/jenkins/users/admin_11540685520045940567
+      - /var/lib/jenkins/jobs/goxbuild
+
+  - name: Copy config files
+    copy:
+      src: "{{ item.src }}"
+      dest: "{{ item.dst }}"
+      owner: jenkins
+      group: jenkins
+      force: yes
+    with_items:
+      - { src: "/root/roles/jenkins/files/users/users.xml", dst: "/var/lib/jenkins/users/" }
+      - { src: "/root/roles/jenkins/files/users/admin_1540685520045940567/config.xml", dst: "/var/lib/jenkins/users/admin_1540685520045940567/" }
+      - { src: "/root/roles/jenkins/files/config.xml", dst: "/var/lib/jenkins/" }
+      - { src: "/root/roles/jenkins/files/locale.xml", dst: "/var/lib/jenkins/" }
+      - { src: "/root/roles/jenkins/files/credentials.xml", dst: "/var/lib/jenkins/" }
+      - { src: "/root/roles/jenkins/files/org.jenkinsci.plugins.golang.GolangBuildWrapper.xml", dst: "/var/lib/jenkins/" }
+      - { src: "/root/roles/jenkins/files/jobs/goxbuild/config.xml", dst: "/var/lib/jenkins/jobs/goxbuild/" }
+
+  - name: Disable start wizard
+    lineinfile:
+      path: "{{ item.path }}"
+      state: present
+      regexp: "{{ item.exp }}"
+      line: "{{ item.n_ln }}"
+    with_items:
+      - { path: "/etc/default/jenkins", exp: '^JAVA_ARGS="-Djava.awt.headless=true"', n_ln: 'JAVA_ARGS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dhudson.security.csrf.DefaultCrumbIssuer.EXCLUDE_SESSION_ID=true"' }
+
+  - name: start Jenkins
+    sysvinit:
+      name: jenkins
+      state: started
+    
+  - name: pause for start jenkins app
+    shell: 'sleep 30'
+    
+  #Install plugins
+  - include_tasks: plugins.yaml
+
+  #Build the project
+  - include_tasks: build.yaml
+    
 
 
 
