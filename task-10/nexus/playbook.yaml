@@ -62,19 +62,19 @@
                 - company-project-deploy
                   
           nexus_local_users:
-            - username: Uploader 
+            - username: uploader 
               first_name: test
               last_name: task
               email: test@company.com
-              password: "admin"
+              password: "uploader"
               roles:
                 - Developers
 
-            - username: Downloader
+            - username: downloader
               first_name: test1
               last_name: task
               email: test@company.com
-              password: "admin"
+              password: "downloader"
               roles:
                 - Developers 
             
