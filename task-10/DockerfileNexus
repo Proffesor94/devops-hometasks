@@ -4,4 +4,5 @@ WORKDIR /root/
 COPY ./nexus/ /root/
 EXPOSE 81
 RUN ansible-playbook playbook.yaml
-CMD ["/opt/nexus-3.38.1-01/bin/nexus", "run"]
+#CMD ["/opt/nexus-3.38.1-01/bin/nexus", "run"]
+ENTRYPOINT service nexus start && bash
