@@ -1,5 +1,4 @@
   - name: jenkins
     hosts: localhost
-    become: true
     roles:
       - jenkins

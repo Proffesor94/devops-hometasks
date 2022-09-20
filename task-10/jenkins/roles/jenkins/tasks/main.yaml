@@ -3,12 +3,11 @@
    pkg:
     - curl
     - apt-transport-https
-    - gnupg2
+    - gnupg
     - git
     - build-essential
     - default-jre
     - python3-pip
-    - python3-apt
    state: latest
    update_cache: yes
 
@@ -62,7 +61,7 @@
     state: started
   
 - name: pause for start jenkins app
-  shell: 'sleep 45'
+  shell: 'sleep 30'
   
  #Install plugins
 - include_tasks: plugins.yaml
