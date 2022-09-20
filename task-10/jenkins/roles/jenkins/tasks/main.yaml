@@ -7,8 +7,8 @@
     - git
     - build-essential
     - default-jre
-    - openjdk-11-jdk
     - python3-pip
+    - python3-apt
    state: latest
    update_cache: yes
 
@@ -36,6 +36,7 @@
    state: latest
    
 - name: stop Jenkins
+  become: yes
   service:
     name: jenkins
     state: stopped
