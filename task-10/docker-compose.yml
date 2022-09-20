@@ -1,13 +1,6 @@
 ---
 version: '3.3'
 services:
- jenkins:
-   build:
-     context: .
-     dockerfile: DockerfileJenkins
-   image: jenkinstest
-   ports: 
-   - 80:8080
  nexus:
    build:
      context: .
@@ -15,4 +8,12 @@ services:
    image: nexustest
    ports: 
    - 81:8081
+ jenkins:
+   build:
+     context: .
+     dockerfile: DockerfileJenkins
+   image: jenkinstest
+   ports: 
+   - 80:8080
+
 
