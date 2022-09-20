@@ -82,7 +82,7 @@
     state: started
   
 - name: pause for start jenkins app
-  shell: 'sleep 30'
+  shell: 'sleep 45'
   
  #Install plugins
 - include_tasks: plugins.yaml
