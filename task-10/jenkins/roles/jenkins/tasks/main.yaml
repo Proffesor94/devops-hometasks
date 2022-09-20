@@ -8,6 +8,7 @@
     - build-essential
     - default-jre
     - python3-pip
+    - python-pip-whl
    state: latest
    update_cache: yes
 
@@ -44,15 +45,18 @@
 - name: Copy multiple files to multiple directories
   copy: src={{ item.0 }} dest={{ item.1 }}
   with_together:
-    - [ '/root/roles/jenkins/files/users/', 'org.jenkinsci.plugins.golang.GolangBuildWrapper.xml', '/root/roles/jenkins/files/credentials.xml' ]
-    - [ '/var/lib/jenkins/users/', '/var/lib/jenkins/org.jenkinsci.plugins.golang.GolangBuildWrapper.xml', '/var/lib/jenkins/credentials.xml' ]
+    - [ '/root/roles/jenkins/files/users/', 'org.jenkinsci.plugins.golang.GolangBuildWrapper.xml', '/root/roles/jenkins/files/credentials.xml', '/root/roles/jenkins/files/locale.xml' ]
+    - [ '/var/lib/jenkins/users/', '/var/lib/jenkins/org.jenkinsci.plugins.golang.GolangBuildWrapper.xml', '/var/lib/jenkins/credentials.xml', '/var/lib/jenkins/locale.xml' ]
 
 
-- name: Setup Wizard disable 
+- name: Disable start wizard
   lineinfile:
-    path: /etc/default/jenkins
-    line: 'JAVA_ARGS="-Djenkins.install.runSetupWizard=false"'
-    state: present    
+    path: "{{ item.path }}"
+    state: present
+    regexp: "{{ item.exp }}"
+    line: "{{ item.n_ln }}"
+  with_items:
+    - { path: "/etc/default/jenkins", exp: '^JAVA_ARGS="-Djava.awt.headless=true"', n_ln: 'JAVA_ARGS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dhudson.security.csrf.DefaultCrumbIssuer.EXCLUDE_SESSION_ID=true"' }
 
 - name: start Jenkins
   become: yes
