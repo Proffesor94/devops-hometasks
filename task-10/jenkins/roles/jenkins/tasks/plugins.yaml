@@ -1,25 +1,11 @@
 - name: Install plugins for jenkins
-  community.general.jenkins_plugin:
+  jenkins_plugin:
     name: "{{ item }}"
-    timeout: 300
     url_username: admin
     url_password: admin
     url: http://localhost:8080
     with_dependencies: yes
-  # with_items:
-  #  - Pipeline
-  #  - golang
-  #  - git
-  #  - github  
-  #  - SSH
-  #  - GitHub Branch Source  
-  #  - SSH Build Agents  
-  #  - nexus-artifact-uploader
-  register: plugin_result
-  until: plugin_result is success
-  retries: 5
-  delay: 10
-  loop: 
+  with_items:
     - Pipeline
     - golang
     - git
@@ -28,8 +14,11 @@
     - GitHub Branch Source  
     - SSH Build Agents  
     - nexus-artifact-uploader
-    - timestamper 
-
+  register: plugin_result
+  until: plugin_result is success
+  retries: 5
+  delay: 5
+  
 #- name: restart Jenkins after plugins install
 #  #become: yes
 #  service:

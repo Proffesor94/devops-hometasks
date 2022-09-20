@@ -1,12 +1,5 @@
   - name: jenkins
     hosts: localhost
-    #become: yes
-    #pre_tasks:
-    #  - name: required pckgs install
-    #    apt:
-    #      pkg:
-    #        - python3-apt
-    #    state: latest
+    become: true
     roles:
-      - geerlingguy.java
       - jenkins
