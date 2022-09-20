@@ -6,7 +6,7 @@
   
   - name: Create a jenkins job
     community.general.jenkins_job:
-      config: "{{ lookup('file', 'templates/config.xml') }}"
+      config: "{{ lookup('file', 'files/jobs/config.xml') }}"
       name: goxbuild
       password: admin
       url: http://localhost:8080
