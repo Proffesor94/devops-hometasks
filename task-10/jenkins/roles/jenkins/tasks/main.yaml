@@ -21,9 +21,9 @@
 
   - name: install python-jenkins with pip
     pip:
-    name:
-    - python-jenkins
-    - lxml
+      name:
+      - python-jenkins
+      - lxml
 
   - name: Add Jenkins apt repository key
     apt_key:
