@@ -41,7 +41,6 @@
     state: stopped
 
 - name: Create dirs
-  become: yes
   file:
     path: "{{ item }}"
     state: directory
@@ -52,7 +51,6 @@
     - /var/lib/jenkins/jobs/goxbuild
 
 - name: Copy config files
-  become: yes
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dst }}"
