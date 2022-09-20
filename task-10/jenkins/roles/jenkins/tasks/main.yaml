@@ -52,6 +52,7 @@
     - /var/lib/jenkins/jobs/gobuild
 
 - name: Copy config files
+  become: yes
   copy:
     src: "{{ item.src }}"
     dest: "{{ item.dst }}"
