@@ -47,9 +47,9 @@
     state: directory
     owner: jenkins
     group: jenkins
-    with_items:
-        - /var/lib/jenkins/users/admin_11540685520045940567
-        - /var/lib/jenkins/jobs/gobuild
+  with_items:
+    - /var/lib/jenkins/users/admin_11540685520045940567
+    - /var/lib/jenkins/jobs/gobuild
 
 - name: Copy multiple files to multiple directories
   copy: src={{ item.0 }} dest={{ item.1 }}
