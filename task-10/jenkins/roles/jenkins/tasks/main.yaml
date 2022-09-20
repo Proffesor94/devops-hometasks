@@ -1,14 +1,13 @@
 - name: required pckgs install
   apt:
    pkg:
-    - curl
-    - apt-transport-https
-    - gnupg
+    - daemon
     - git
-    - build-essential
-    - default-jre
-    - python3-pip
+    - build-essential 
     - python-pip-whl
+    - python3-pip
+    - openjdk-11-jdk
+    - gnupg2
    state: latest
    update_cache: yes
 
