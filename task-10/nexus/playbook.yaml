@@ -1,12 +1,17 @@
   - name: nexus
     hosts: localhost
+    become: true
     pre_tasks:
 
-    - name: Add new repo
+    - name: Add key
+      apt_key:
+        url: https://adoptopenjdk.jfrog.io/adoptopenjdk/api/gpg/key/public
+  
+    - name: Add repository
       apt_repository:
-        repo: deb http://security.debian.org/debian-security stretch/updates main
-       #state: present
-        update_cache: true   
+      repo: deb https://adoptopenjdk.jfrog.io/adoptopenjdk/deb/ bullseye main
+      state: present
+      update_cache: true  
 
     - name: required pckgs install
       apt:
@@ -83,4 +88,4 @@
           nexus_config_raw: true 
        
     roles:
-      - ansible-thoteam.nexus3-oss
+      - nexus3-oss
