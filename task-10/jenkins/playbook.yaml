@@ -3,10 +3,10 @@
     become: yes
     pre_tasks:
       - name: required pckgs install
-          apt:
-            pkg:
-              - python3-apt
-            state: latest
+        apt:
+          pkg:
+            - python3-apt
+        state: latest
     roles:
       - geerlingguy.java
       - jenkins
