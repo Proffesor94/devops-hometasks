@@ -25,7 +25,6 @@
 - name: Add Jenkins apt repository
   apt_repository:
    repo: deb https://pkg.jenkins.io/debian-stable binary/
-   #state: present
    update_cache: true
    
 - name: Install Jenkins
@@ -33,12 +32,6 @@
    pkg:
    - jenkins
    state: present
-   
-# - name: stop Jenkins
-#   become: yes
-#   service:
-#     name: jenkins
-#     state: stopped
 
 - name: Create dirs
   file:
@@ -76,7 +69,7 @@
     - { path: "/etc/default/jenkins", exp: '^JAVA_ARGS="-Djava.awt.headless=true"', n_ln: 'JAVA_ARGS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dhudson.security.csrf.DefaultCrumbIssuer.EXCLUDE_SESSION_ID=true"' }
 
 - name: start Jenkins
-  become: yes
+  become: true
   sysvinit:
     name: jenkins
     state: started
@@ -99,10 +92,3 @@
   
  #Install plugins
 - include_tasks: plugins.yaml
-
- #Build the project
-#- include_tasks: build.yaml
-  
-
-
-

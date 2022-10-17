@@ -27,5 +27,3 @@ services:
 
 volumes:
   workspace:
-
-

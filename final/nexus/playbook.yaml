@@ -3,7 +3,6 @@
     become: true
     pre_tasks:
 
-
     - name: Add new repo
       apt_repository:
         repo: deb http://security.debian.org/debian-security stretch/updates main
@@ -19,8 +18,6 @@
         - rsync
        state: latest
 
-  
- 
     vars:
           nexus_timezone: 'Europe/Minsk'
           nexus_admin_password: 'admin'
