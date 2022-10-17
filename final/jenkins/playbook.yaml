@@ -1,0 +1,4 @@
+  - name: jenkins
+    hosts: localhost
+    roles:
+      - jenkins

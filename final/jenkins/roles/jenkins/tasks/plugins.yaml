@@ -1,0 +1,48 @@
+- name: Install plugins for jenkins
+  jenkins_plugin:
+    name: "{{ item }}"
+    url_username: admin
+    url_password: admin
+    url: http://localhost:8080
+    with_dependencies: yes
+  with_items:
+   - nexus-artifact-uploader
+   - credentials
+   - git
+   - github
+   - golang
+   - pipeline
+   - ssh
+   - ssh-credentials
+   - ssh-build-agents
+   - workflow-cps
+   - workflow-aggregator
+   - pipeline-stage-view
+   - pipeline-stage-step
+   - pipeline-github-lib  
+   - docker-workflow
+   - docker-pipeline
+   - docker-build-step
+   - docker-plugin
+   - startup-trigger-plugin
+   - locale
+  register: plugin_result
+  until: plugin_result is success
+  retries: 5
+  delay: 5
+  
+#- name: restart Jenkins after plugins install
+#  #become: yes
+#  service:
+#    name: jenkins
+#    state: restarted
+
+#- name: Check that a page returns a status 200 and fail if the word "Authentication required" is not in the page contents
+#  uri:
+#    url: http://localhost:8080
+#    return_content: yes
+#    timeout: 10
+#  register: this
+#  retries: 60
+#  delay: 5
+#  failed_when: " 'Authentication required' not in this.content" 

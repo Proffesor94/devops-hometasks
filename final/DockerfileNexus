@@ -1,0 +1,8 @@
+FROM debian:bullseye
+RUN apt-get update && apt-get install -y ansible
+WORKDIR /root/
+COPY ./nexus/ /root/
+EXPOSE 8081
+RUN ansible-playbook playbook.yaml
+CMD /opt/nexus-latest/bin/nexus run
+#ENTRYPOINT service nexus start && bash
