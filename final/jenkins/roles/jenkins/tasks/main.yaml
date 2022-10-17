@@ -8,7 +8,7 @@
     - python3-pip
     - openjdk-11-jdk
     - gnupg2
-   state: latest
+   state: present
    update_cache: yes
 
 - name: install python-jenkins with pip
@@ -102,7 +102,3 @@
 
  #Build the project
 #- include_tasks: build.yaml
-  
-
-
-
