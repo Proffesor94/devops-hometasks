@@ -5,19 +5,23 @@
     url_password: admin
     url: http://localhost:8080
     with_dependencies: yes
-  with_items:
+  loop:
     - locale
     - github
     - golang
+    - credentials
+    - workflow-step-api
+    - job-dsl
+    - workflow-api
+    - antisamy-markup-formatter
     - nexus-artifact-uploader
-    - timestamper 
+    - timestamper
     - pipeline
     - pipeline-stage-view
     - pipeline-github-lib
     - pipeline-build-step
     - workflow-basic-steps
     - build-pipeline-plugin
-    - workflow-aggregator
     - github-branch-source
     - workflow-cps
     - ssh
@@ -33,19 +37,3 @@
   until: plugin_result is success
   retries: 5
   delay: 5
-  
-#- name: restart Jenkins after plugins install
-#  #become: yes
-#  service:
-#    name: jenkins
-#    state: restarted
-
-#- name: Check that a page returns a status 200 and fail if the word "Authentication required" is not in the page contents
-#  uri:
-#    url: http://localhost:8080
-#    return_content: yes
-#    timeout: 10
-#  register: this
-#  retries: 60
-#  delay: 5
-#  failed_when: " 'Authentication required' not in this.content" 
