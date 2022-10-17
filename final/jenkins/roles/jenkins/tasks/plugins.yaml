@@ -6,29 +6,26 @@
     url: http://localhost:8080
     with_dependencies: yes
   with_items:
-    - build-pipeline-plugin
-    - docker-plugin
-    - docker-workflow
-    - github
-    - github-branch-source
-    - golang
-    - locale
-    - nexus-artifact-uploader
-    - pipeline
-    - pipeline-build-step
-    - pipeline-github-lib
-    - pipeline-stage-step
-    - pipeline-stage-view
-    - pipeline-utility-steps
-    - ssh
-    - ssh-build-agents
-    - ssh-steps
-    - timestamper 
-    - workflow-aggregator
-    - workflow-aggregator
-    - workflow-basic-steps
-    - workflow-cps
-    - workflow-durable-task-step
+   - nexus-artifact-uploader
+   - credentials
+   - git
+   - github
+   - golang
+   - pipeline
+   - ssh
+   - ssh-credentials
+   - ssh-build-agents
+   - workflow-cps
+   - workflow-aggregator
+   - pipeline-stage-view
+   - pipeline-stage-step
+   - pipeline-github-lib  
+   - docker-workflow
+   - docker-pipeline
+   - docker-build-step
+   - docker-plugin
+   - startup-trigger-plugin
+   - locale
   register: plugin_result
   until: plugin_result is success
   retries: 5

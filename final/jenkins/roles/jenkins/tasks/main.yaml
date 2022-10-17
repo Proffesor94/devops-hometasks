@@ -8,7 +8,7 @@
     - python3-pip
     - openjdk-11-jdk
     - gnupg2
-   state: present
+   state: latest
    update_cache: yes
 
 - name: install python-jenkins with pip
@@ -48,7 +48,7 @@
     group: jenkins
   with_items:
     - /var/lib/jenkins/users/admin_11540685520045940567
-    - /var/lib/jenkins/jobs/GoPipeline
+    - /var/lib/jenkins/jobs/gopipeline
 
 - name: Copy config files
   copy:
@@ -76,7 +76,7 @@
     - { path: "/etc/default/jenkins", exp: '^JAVA_ARGS="-Djava.awt.headless=true"', n_ln: 'JAVA_ARGS="-Djava.awt.headless=true -Djenkins.install.runSetupWizard=false -Dhudson.security.csrf.DefaultCrumbIssuer.EXCLUDE_SESSION_ID=true"' }
 
 - name: start Jenkins
-  become: true
+  become: yes
   sysvinit:
     name: jenkins
     state: started
@@ -101,7 +101,7 @@
 - include_tasks: plugins.yaml
 
  #Build the project
-- include_tasks: build.yaml
+#- include_tasks: build.yaml
   
 
 
