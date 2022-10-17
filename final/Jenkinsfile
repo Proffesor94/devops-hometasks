@@ -4,7 +4,7 @@ pipeline {
         stage ('Build WCG') {
             agent {
                 dockerfile { 
-                    filename 'final/DockerfileGo' 
+                    filename 'final/Dockerfile.Go' 
                     args '--network host'
                }
             }
@@ -50,7 +50,7 @@ pipeline {
         stage('Upload for test and tests') {
             agent {
                 dockerfile { 
-                    filename 'final/DockerfileAlpine' 
+                    filename 'final/Dockerfile.Alpine' 
                     args '--network host'
                }
             }
