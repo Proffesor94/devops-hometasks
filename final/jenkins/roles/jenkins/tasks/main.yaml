@@ -48,7 +48,7 @@
     group: jenkins
   with_items:
     - /var/lib/jenkins/users/admin_11540685520045940567
-    - /var/lib/jenkins/jobs/gopipeline
+    - /var/lib/jenkins/jobs/GoPipeline
 
 - name: Copy config files
   copy:
@@ -101,4 +101,8 @@
 - include_tasks: plugins.yaml
 
  #Build the project
-#- include_tasks: build.yaml
+- include_tasks: build.yaml
+  
+
+
+
