@@ -4,7 +4,7 @@ services:
   nexus:
     build:
       context: .
-      dockerfile: DockerfileNexus
+      dockerfile: Dockerfile.Nexus
     ports: 
     - 81:8081
     network_mode: host
@@ -14,7 +14,7 @@ services:
   jenkins:
     build:
       context: .
-      dockerfile: DockerfileJenkins
+      dockerfile: Dockerfile.Jenkins
     image: jenkins
     privileged: true
     volumes:
