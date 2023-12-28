@@ -1,2 +1,4 @@
+.config/
+.gnupg/
 .vagrant/
-.vscode/settings.json
+.vscode/
