@@ -1,7 +1,7 @@
 # Homework for Continuous Integration and Continuous Deployment (DevOps) course at the IT-Academy (Minsk, Belarus).
 # Started 06.2022, finished 10.2022.   
 
-- [Homework 1](02-tools/README.md#homework-1) (git,vagrnat)
+- [Homework 1](task-01/README.md#homework-1) (git,vagrnat)
 - [Homework 2](03-lxc/README.md#homework-2) (lxc)
 - [Homework 3](04-5-ansible/README.md#homework-3) (ansible)
 - [Homework 4](06-puppet/README.md#homework-4) (puppet)
