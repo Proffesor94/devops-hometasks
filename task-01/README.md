@@ -1,11 +1,2 @@
-# Домашнее задание
-- Создайте и опубликуйте на [Vagrant Cloud](https://vagrantcloud.com/) образ Vagrant, удовлетворяющий требованиям:
-  - Основан на centos/8
-  - Включает установленный apache2
-  - Включает установленный php
-  - Включает установленный mysql-server
-- Переработайте первое домашнее задание, основываясь на вашем образе. В вашем репозитории создайте ветку `feature-01`. Загрузите переработанное 1-е домашнее задание в каталог `task-01` в ветке `feature-01`.
-- Так же в директории `task-01` создайте `README.md` файл, в который пропишите ссылку на ваш Vagrant образ в Vagrant Cloud.
-- На комит поставьте тег `01.beta`.
-
+# Link to the Vagrant box
 https://app.vagrantup.com/serfer94/boxes/centos8-lamp/versions/0.1/providers/virtualbox.box
